@@ -1,0 +1,18 @@
+helm install prometheus ./prometheus-operator/ -f prometheus.yaml --namespace monitoring --set prometheusOperator.admissionWebhooks.enabled=false --set prometheusOperator.tlsProxy.enabled=false
+
+helm upgrade prometheus ./prometheus-operator/ -f prometheus.yaml --namespace monitoring --set prometheusOperator.admissionWebhooks.enabled=false --set prometheusOperator.tlsProxy.enabled=false
+
+
+sum(rate(hello_service:request_count{exported_endpoint="/config"}[1m]))
+sum by (exported_endpoint) (rate(hello_service:request_count[1m]))
+
+histogram_quantile(0.5, (sum by (le, exported_endpoint) (rate(hello_service:latency_bucket[1m]))))
+
+
+helm install prometheus stable/prometheus-operator -f prometheus.yaml --namespace monitoring
+
+helm install hello-service ./hello-service-chart/ -n svkrivonos
+
+helm install nginx stable/nginx-ingress -f nginx-ingress.yaml -n monitoring
+
+kubectl config view --raw >~/.kube/config
